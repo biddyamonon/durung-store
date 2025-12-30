@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Durung Store – Real Payment Ready</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#f6f6f7;color:#111}
+header{background:#fff;border-bottom:1px solid #e5e5e5;position:sticky;top:0;z-index:10}
+.container{max-width:1200px;margin:auto;padding:15px}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:24px;font-weight:700}
+.menu a{margin-left:18px;text-decoration:none;color:#333;font-weight:500}
+.hero{background:linear-gradient(120deg,#141e30,#243b55);color:#fff;padding:70px 20px;text-align:center}
+.hero h1{font-size:42px;margin-bottom:10px}
+.hero p{margin-bottom:25px}
+.btn{background:#111;color:#fff;padding:12px 22px;border-radius:6px;border:none;cursor:pointer}
+.tools{display:flex;gap:10px;justify-content:center;margin:25px 0;flex-wrap:wrap}
+.tools input,.tools select{padding:10px;border-radius:6px;border:1px solid #ccc}
+.products{padding:40px 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+.card{background:#fff;border-radius:10px;box-shadow:0 10px 20px rgba(0,0,0,.08);overflow:hidden}
+.card img{width:100%;height:210px;object-fit:cover}
+.card .info{padding:15px}
+.card h3{font-size:17px;margin-bottom:6px}
+.price{font-weight:700;margin-bottom:8px}
+.card button{width:100%;padding:9px;background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.cart-btn,.admin-btn,.order-btn,.lang-btn{position:fixed;background:#111;color:#fff;padding:12px 18px;border-radius:50px;cursor:pointer}
+.cart-btn{right:20px;bottom:20px}
+.admin-btn{left:20px;bottom:20px;background:#444}
+.order-btn{right:20px;bottom:80px;background:#333}
+.lang-btn{left:20px;bottom:80px;background:#222}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal-content{background:#fff;padding:25px;border-radius:10px;width:95%;max-width:500px;max-height:90%;overflow:auto}
+.cart-item{display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px}
+footer{background:#111;color:#aaa;padding:40px 20px;margin-top:60px}
+footer h4{color:#fff;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="container nav">
+  <div class="logo">Durung Store</div>
+  <div class="menu">
+   <a href="#">Home</a>
+   <a href="#products">Shop</a>
+   <a href="#" onclick="openLogin()">Login</a>
+   <a href="#footer">Contact</a>
+  </div>
+ </div>
+</header>
+
+<section class="hero">
+ <h1 id="hTitle">Ultimate Shoping Store</h1>
+ <p id="hSub">Cart • Checkout • Admin • Orders • Real Payment</p>
+ <button class="btn" onclick="document.getElementById('products').scrollIntoView()">Shop Now</button>
+</section>
+
+<div class="tools">
+ <input type="text" placeholder="Search" onkeyup="searchProduct(this.value)">
+ <select onchange="sortProduct(this.value)">
+  <option value="">Sort</option>
+  <option value="low">Low → High</option>
+  <option value="high">High → Low</option>
+ </select>
+</div>
+
+<section class="products" id="products">
+ <div class="container"><div class="grid" id="productGrid"></div></div>
+</section>
+
+<div class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</div>
+<div class="order-btn" onclick="openOrders()">📦 Orders</div>
+<div class="admin-btn" onclick="openAdmin()">⚙ Admin</div>
+<div class="lang-btn" onclick="toggleLang()">🌐 EN/BN</div>
+
+<!-- CART -->
+<div class="modal" id="cartModal"><div class="modal-content">
+<h3>Cart</h3>
+<div id="cartItems"></div>
+<h4>Total: ৳<span id="total">o</span></h4>
+<button class="btn" onclick="payNow()">Pay Now</button>
+<button class="btn" style="margin-top:10px" onclick="closeCart()">Close</button>
+</div></div>
+
+<!-- LOGIN -->
+<div class="modal" id="loginModal"><div class="modal-content">
+<h3>Login</h3>
+<input placeholder="Email">
+<input type="password" placeholder="Password">
+<button class="btn" onclick="closeLogin()">Login</button>
+</div></div>
+
+<!-- ADMIN -->
+<div class="modal" id="adminModal"><div class="modal-content">
+<h3>Admin Panel</h3>
+<input id="pname" placeholder="Product name">
+<input id="pprice" placeholder="Price">
+<input id="pimg" placeholder="Image URL">
+<button class="btn" onclick="addProduct()">Add Product</button>
+<div id="adminList"></div>
+<button class="btn" style="margin-top:10px" onclick="closeAdmin()">Close</button>
+</div></div>
+
+<!-- ORDERS -->
+<div class="modal" id="orderModal"><div class="modal-content">
+<h3>Order History</h3>
+<div id="orderList"></div>
+<button class="btn" onclick="closeOrders()">Close</button>
+</div></div>
+
+<footer id="footer">
+ <div class="container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+  <div><h4>Durung Store</h4><p>All features demo e-commerce website.</p></div>
+  <div><h4>Payment</h4><p>bKash • Nagad • COD</p></div>
+  <div><h4>Contact</h4><p>support@durung.com<br>Bangladesh</p></div>
+ </div>
+</footer>
+
+<script>
+let lang='en';
+let products=JSON.parse(localStorage.getItem('products'))||[
+{name:'T-Shirt',price:899,img:'tshirt.jpg'},
+{name:'Pants',price:1990,img:'pants.jpg'},
+{name:'Hoddie',price:2299,img:'hoddie.jpg'}
+];
+let cart=[];
+let orders=JSON.parse(localStorage.getItem('orders'))||[];
+const grid=document.getElementById('productGrid');
+
+function render(list){grid.innerHTML='';list.forEach((p,i)=>{grid.innerHTML+=`<div class=card><img src=${p.img}><div class=info><h3>${p.name}</h3><div class=price>৳${p.price}</div><button onclick=addCart(${i})>${lang==='en'?'Add to Cart':'কার্টে যোগ করুন'}</button></div></div>`})}
+render(products);
+
+function addCart(i){cart.push(products[i]);document.getElementById('cartCount').innerText=cart.length}
+function openCart(){cartModal.style.display='flex';let t=0;cartItems.innerHTML='';cart.forEach(c=>{t+=c.price;cartItems.innerHTML+=`<div class=cart-item>${c.name}<span>৳${c.price}</span></div>`});total.innerText=t}
+function closeCart(){cartModal.style.display='none'}
+function payNow(){
+// Simulated payment (replace with real gateway API)
+alert(lang==='en'?'Redirecting to Payment Gateway...':'পেমেন্ট গেটওয়েতে পাঠানো হচ্ছে...');
+checkout();
+}
+function checkout(){orders.push({items:[...cart],date:new Date().toLocaleString()});localStorage.setItem('orders',JSON.stringify(orders));cart=[];cartCount.innerText=0;closeCart();alert(lang==='en'?'Order placed!':'অর্ডার সম্পন্ন হয়েছে!')}
+function searchProduct(v){render(products.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())))}
+function sortProduct(v){let s=[...products];if(v==='low')s.sort((a,b)=>a.price-b.price);if(v==='high')s.sort((a,b)=>b.price-a.price);render(s)}
+function openLogin(){loginModal.style.display='flex'}
+function closeLogin(){loginModal.style.display='none'}
+function openAdmin(){adminModal.style.display='flex';adminList.innerHTML='';products.forEach((p,i)=>{adminList.innerHTML+=`<div class=cart-item>${p.name}<button onclick=delProduct(${i})>❌</button></div>`})}
+function closeAdmin(){adminModal.style.display='none'}
+function addProduct(){products.push({name:pname.value,price:+pprice.value,img:pimg.value||'https://picsum.photos/400'});localStorage.setItem('products',JSON.stringify(products));render(products);openAdmin()}
+function delProduct(i){products.splice(i,1);localStorage.setItem('products',JSON.stringify(products));render(products);openAdmin()}
+function openOrders(){orderModal.style.display='flex';orderList.innerHTML='';orders.forEach(o=>{orderList.innerHTML+=`<div class=cart-item>${o.date} (${o.items.length} items)</div>`})}
+function closeOrders(){orderModal.style.display='none'}
+function toggleLang(){lang=lang==='en'?'bn':'en';hTitle.innerText=lang==='en'?'Ultimate E-Commerce Store':'সম্পূর্ণ ই-কমার্স স্টোর';hSub.innerText=lang==='en'?'Cart • Checkout • Admin • Orders • Real Payment':'কার্ট • চেকআউট • অ্যাডমিন • অর্ডার • রিয়েল পেমেন্ট';render(products)}
+</script>
+
+</body>
+</html>
